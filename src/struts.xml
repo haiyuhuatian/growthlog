@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 是否显示详细错误信息 -->
+	<constant name="struts.devMode" value="false" />
+	<!-- 国际化资源文件名称 -->
+	<constant name="struts.custom.i18n.resources" value="i18n" />
+	<!-- 是否自动加载国际化资源文件 -->
+	<constant name="struts.i18n.reload" value="false" />
+	<!-- convention类重新加载 -->
+	<constant name="struts.convention.classes.reload" value="true" />
+	<!-- 浏览器是否缓存静态内容 -->
+	<constant name="struts.serve.static.browserCache" value="true" />
+	<!-- 上传文件大小限制设置 10MB -->
+	<constant name="struts.multipart.maxSize" value="10485760" />
+	<!-- 主题 -->
+	<constant name="struts.ui.theme" value="simple" />
+	<!-- 编码 -->
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<!-- 后缀 -->
+	<constant name="struts.action.extension" value="action" />
+	<!-- 结果资源的路径 -->
+	<constant name="struts.convention.result.path" value="/WEB-INF/content/" />
+	<!-- URL资源分隔符 -->
+	<constant name="struts.convention.action.name.separator"
+		value="_" />
+    <!-- 让struts2支持动态方法调用,使用叹号访问方法 -->
+    <constant name="struts.enable.DynamicMethodInvocation" value="true" />
+	<package name="basePackage" extends="struts-default" abstract="true">
+		<interceptors>
+			<interceptor-stack name="baseStack">
+				<interceptor-ref name="exception" />
+				<interceptor-ref name="alias" />
+				<interceptor-ref name="servletConfig" />
+				<interceptor-ref name="i18n" />
+				<interceptor-ref name="prepare" />
+				<interceptor-ref name="chain" />
+				<interceptor-ref name="debugging" />
+				<interceptor-ref name="scopedModelDriven" />
+				<interceptor-ref name="modelDriven" />
+
+				<!-- 配置文件上传拦截器 -->
+				<interceptor-ref name="fileUpload">
+
+					<!-- 允许上传的文件类型 -->
+					<param name="allowedTypes">image/bmp,image/gif,image/png,
+						image/jpeg,image/x-png,image/pjpeg,application/vnd.ms-excel,
+						application/msword,application/vnd.ms-powerpoint,text/plain,
+						application/x-zip-compressed,application/pdf,application/x-shockwave-flash,
+						application/vnd.openxmlformats-officedocument.presentationml.presentation,
+						application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+						application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+						application/octet-stream,application/kset
+					</param>
+
+					<!-- 上传文件大小限制设置 10MB -->
+					<param name="maximumSize">10485760</param>
+				</interceptor-ref>
+
+				<interceptor-ref name="checkbox" />
+				<interceptor-ref name="multiselect" />
+				<interceptor-ref name="staticParams" />
+				<interceptor-ref name="actionMappingParams" />
+				<interceptor-ref name="params">
+					<param name="excludeParams">dojo\..*,^struts\..*</param>
+				</interceptor-ref>
+				<interceptor-ref name="conversionError" />
+				<interceptor-ref name="validation">
+					<param name="excludeMethods">input,back,cancel,browse</param>
+					<param name="validateAnnotatedMethodOnly">true</param>
+				</interceptor-ref>
+				<interceptor-ref name="workflow">
+					<param name="excludeMethods">input,back,cancel,browse</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="baseStack" />
+		<global-results>
+			<result name="login" type="redirect">/portal/index!index.action</result>
+			<result name="alert">/WEB-INF/content/common/result.jsp</result>
+			<result name="error">/WEB-INF/content/common/error.jsp</result>
+			<result type="stream" name="imgcode">
+				<param name="contentType">image/jpeg</param>
+				<param name="inputName">inputStream</param>
+			</result>
+		</global-results>
+	</package>
+	<package name="portal" extends="basePackage"></package>
+	<package name="home" extends="basePackage"></package>
+	<package name="mine" extends="basePackage"></package>
+</struts>    

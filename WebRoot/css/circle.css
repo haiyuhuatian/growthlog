@@ -1,0 +1,56 @@
+.other-circle{
+	background:url(../images/circle_list_border.png) no-repeat;
+	height:56px;
+	margin-top:25px;
+}
+.other-circle p{
+	left: 10px; 
+	bottom: -15px; 
+	font-weight: bold; 
+	position: relative;
+}
+.other-circle span a{
+	padding-left:10px;
+	padding-right:10px;
+}
+
+.selected-other-type{
+	color:#fff;
+	background-color:#037f88;
+}
+.unSelected-other-type{
+	background-color:#fff;
+	color:#1a1a1a;
+}
+.other-circle-detail {
+	margin: 0px auto; 
+	width: 80%;
+}
+.other-circle-detail ul{
+	width:200px;
+	text-align:left;
+	margin:0 auto;
+	color:#393232;
+	margin-top:15px;
+}
+.other-circle-detail ul li{
+	height:30px;
+	line-height:30px;
+}
+.other-circle-detail p{
+	color:#393232;
+	margin-top:15px;
+}
+.join-circle{
+	margin: 0px auto; 
+	border-radius: 5px; 
+	width: 100px; 
+	height: 30px; 
+	line-height: 30px; 
+	background-color: #037f88;
+	margin-top:20px;
+}
+.join-circle a{
+	color: rgb(255, 255, 255);
+	font-weight: bold;
+}

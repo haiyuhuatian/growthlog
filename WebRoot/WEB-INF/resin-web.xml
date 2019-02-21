@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://caucho.com/ns/resin" xmlns:resin="http://caucho.com/ns/resin/core">
+
+	<character-encoding>UTF-8</character-encoding>
+
+	<database>
+		<jndi-name> jdbc/DefaultDataSource</jndi-name>
+		<driver type="com.mysql.jdbc.Driver">
+			<url>jdbc:mysql://localhost:3306/growth_log?characterEncoding=UTF-8&amp;useUnicode=true
+			</url>
+			<user>root</user>
+			<password>root</password>
+		</driver>
+		<max-connections>20</max-connections>
+	</database>
+	<servlet>
+		<servlet-name>weixinServlet</servlet-name>
+		<servlet-class>cn.com.czrz.servlet.weixinServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>weixinServlet</servlet-name>
+		<url-pattern>/weixinServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>SystemTimerServlet</servlet-name>
+		<servlet-class>cn.com.czrz.servlet.SystemTimerServlet
+		</servlet-class>
+		<run-at>03:00</run-at>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>SystemTimerServlet</servlet-name>
+		<url-pattern>/SystemTimerServlet</url-pattern>
+	</servlet-mapping>
+</web-app>

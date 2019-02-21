@@ -1,0 +1,202 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@ include file="/WEB-INF/content/common/taglib.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>成长日志</title>
+		<meta name="keywords" value="成长日志" />
+		<meta name="description" value="首个记录成长日志的网站" />
+		<meta name="author" value="成长日志" />
+		<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no">
+		<link href="${base }/phone-css/phone.css" rel='stylesheet' type='text/css' />
+		<script type="text/javascript" src="${base }/js/jquery.js"></script> 
+		<script type="text/javascript" src="${base }/js/mobile-comment.js"></script> 
+		<link rel="stylesheet" href="${base }/phone-css/pullToRefresh_comment_list.css" /> 
+		<link href="${base }/phone-css/phone.css" rel='stylesheet' type='text/css' />
+		<script type="text/javascript" src="${base }/phone-js/iscroll.js"></script>
+		<script type="text/javascript" src="${base }/phone-js/pullToRefresh.js"></script>
+		<script type="text/javascript" src="${base }/js/jquery.js"></script>
+		<script type="text/javascript"  src="${base }/phone-js/xback.js"></script>
+		<script type="text/javascript" >
+			 	XBack.listen(function(){
+			 		var circleId = $("#circleId").val();
+			 		var followId = $("#followId").val();
+			 		if(circleId != ""&&circleId != null){
+			 			window.location = "${base}/mine/circle!diaryDetail.action?circle.id="+circleId+"&diary.id="
+							  +$("#diaryId").val();
+			 		}else if(followId != "" && followId != null){
+			 			window.location = "${base}/mine/follow!diaryDetail.action?follow.id="
+			 					+followId
+			 					+"&diary.id="
+			 					+$("#diaryId").val();
+			 		}else{
+			 			window.location = "${base}/mine/diary!detail.action?diary.id="+$("#diaryId").val();
+			 		}
+				});
+		</script>
+	</head>
+	<body style="background-color:#F0EFEE;">
+		<input type="hidden" id="firstCommentIdSign" value="${firstCommentIdSign }"/>
+		<input type="hidden" id="lastCommentIdSign" value="${lastCommentIdSign }"/>
+		<input type="hidden" value="${user.nickname }" id="nickname"/>
+		<input type="hidden" value="${diary.id }" id="diaryId"/>
+		<input type="hidden" id="userId" value="${user.id}"/>
+		<input type="hidden" id="circleId" value="${circle.id}"/>
+		<input type="hidden" id="followId" value="${followId}"/>
+		<input type="hidden" value="${user.head_img }" id="headImg"/>
+		<div id="wrapper" class="comment-containter">
+			<ul >
+				<c:forEach items="${commentList }" var="c">
+					<li id="comment${c.id }">
+						<div class="head-div">
+							<img src="${base }/uploadImages/growthLog${c.user_id }/${c.head_img}"  width="50px;" />
+						</div>
+						<div class="comment-div">
+							<p class='comment-user-nickname'>${c.nickname }</p>
+							<p class="comment-p">${c.content }</p>
+							<p class="replay-p" onclick="openComment(2,${c.id},'${c.nickname }')">
+								<img src='${base }/images/add_reply.png' width="20px;"  style=''alt="" /> 回复
+							</p>
+							<p class="like-p" style="${empty(c.like_id)?'':'color:red;'}" onclick="clickLike2($(this),${c.id})">
+								<input type="hidden" id="commentLike${c.id }" value="${c.like_id }"/>
+								<img src='${empty(c.like_id)?"../images/before_like.png":"../images/like.png" }' 
+									width="20px;"  />
+								赞<i style="color:#848484">${c.like_num}</i>
+							</p>
+							<c:if test="${c.family_num ne '0' }">
+							<p class="show-family" 
+								onclick="window.location='${base}/mine/diary!showSonComments.action?diaryComment.id=${c.id}&circle.id=${circle.id }&follow.id=${followId }'">
+								查看全部${c.family_num }条回复
+							</p>
+							</c:if>
+						</div>
+						<div class="clear"></div>
+					</li>
+				</c:forEach>
+			</ul>
+		</div>
+			<div class="write-comment" id="writeComment" style="display:none">
+				<input type="hidden" id="commentType" />
+				<input type="hidden" id="commentId"/>
+				<input type="hidden" id="faNickName"/>
+				<div class="write-area" id="writeArea">
+					<div onclick="closeComment()"><img src="${base }/images/close-btn.png" alt="" width="15px" />关闭</div>
+					<textarea rows="" cols="" id="writeInput" style="font-size:14px;"></textarea>
+					<div onclick="subComment()" class="comment-submit">
+						提&nbsp;&nbsp;&nbsp;&nbsp;交
+					</div>
+				</div>
+			</div>
+		<script type="text/javascript">
+				var loadDatas = "";
+				var diaryId = $("#diaryId").val();
+				var circleId = $("#circleId").val();
+				function loadData(){
+					var	lastCommentIdSign = $("#lastCommentIdSign").val();
+					 $.ajax({ 
+						 type: "post", 
+						 url: "diary!loadMoreComments.action", 
+						 async: false,
+						 dataType: "json", 
+						 data:{"diary.id":diaryId,"lastCommentIdSign":lastCommentIdSign},
+						 success: function (data) {
+							 if(data != "0"){
+								 loadDatas = data;
+							 }else {
+								 loadDatas = "";
+							 }
+						 } 
+						});
+				}
+				refresher.init({
+					id: "wrapper",
+					pullDownAction: Refresh,
+					pullUpAction: Load
+				});
+				var generatedCount = 0;
+				function Refresh() {
+					var circleId = document.getElementById("circleId").value;
+					window.location = '${base}/mine/diary!moreComments.action?&diary.id='+diaryId+"&circle.id="+circleId;
+				}
+				
+				function Load() {
+					loadData();
+					setTimeout(function () {
+						var el, li, i;
+						el = document.querySelector("#wrapper ul");
+						if(loadDatas != ''){
+							$.each(loadDatas,function(i,item){
+								li = document.createElement('li');
+								li.setAttribute('id','comment'+item.id);
+								var inHTML = "";
+								if(item.like_id == ""){
+									inHTML = '<div class="head-div">'
+										 + '<img src="${base }/uploadImages/growthLog'+item.user_id+'/'+item.head_img+'"  width="50px;" />'
+									     + '</div>'
+										 + '<div class="comment-div">'
+									     + '<p class="comment-user-nickname">'+item.nickname+'</p>'
+										 + '<p class="comment-p">'+item.content+'</p>'
+										 + '<p class="replay-p" onclick="openComment(2,'+item.id+',\''+item.nickname+'\')">'
+										 + '<img src="${base }/images/add_reply.png" width="20px;"  /> 回复'
+										 + '</p>'
+										 + '<p class="like-p" onclick="clickLike2($(this),'+item.id+')">'
+										 + '<input type="hidden" id="commentLike'+item.id+'" value="'+item.like_id+'"/>'
+										 + '<img src="${base }/images/before_like.png" width="20px;"  />'
+										 + '赞<i style="color:#848484">'+item.like_num+'</i>'
+										 + '</p>';
+									if(item.family_num>0){
+										inHTML = inHTML 
+											   + '<p class="show-family" '
+											   + 'onclick="window.location=\'${base}/mine/diary!showSonComments.action?diaryComment.id='+item.id+'&circle.id='+circleId+'\'">'
+											   +'查看全部'+item.family_num+'条回复'
+											   +'</p>'
+									}
+									inHTML = inHTML + '</div>'
+										 + '<div class="clear"></div>';
+								}else{
+									inHTML = '<div class="head-div">'
+										 + '<img src="${base }/uploadImages/growthLog'+item.user_id+'/'+item.head_img+'"  width="50px;" />'
+									     + '</div>'
+										 + '<div class="comment-div">'
+									     + '<p class="comment-user-nickname">'+item.nickname+'</p>'
+										 + '<p class="comment-p">'+item.content+'</p>'
+										 + '<p class="replay-p" onclick="openComment(2,'+item.id+',\''+item.nickname+'\')">'
+										 + '<img src="${base }/images/add_reply.png" width="20px;"  /> 回复'
+										 + '</p>'
+										 + '<p class="like-p" style="color:red;" onclick="clickLike2($(this),'+item.id+')">'
+										 + '<input type="hidden" id="commentLike'+item.id+'" value="'+item.like_id+'"/>'
+										 + '<img src="${base }/images/like.png" width="20px;"  />'
+										 + '赞<i style="color:#848484">'+item.like_num+'</i>'
+										 + '</p>';
+									if(item.family_num>0){
+										inHTML = inHTML 
+											   + '<p class="show-family" '
+											   + 'onclick="window.location=\'${base}/mine/diary!showSonComments.action?diaryComment.id='+item.id+'&circle.id='+circleId+'\'">'
+											   +'查看全部'+item.family_num+'条回复'
+											   +'</p>'
+									}
+									inHTML = inHTML + '</div>'
+										 + '<div class="clear"></div>';
+								}
+								li.innerHTML = inHTML;
+								if(i == loadDatas.length-1){
+									var lastCommentIdSignNode = document.getElementById('lastCommentIdSign');
+									lastCommentIdSignNode.value = item.id;
+								}
+								el.appendChild(li, el.childNodes[0]);
+				    		});
+						}
+						wrapper.refresh();
+						for (var i = 0; i < document.querySelectorAll("#wrapper ul li").length; i++) {
+							document.querySelectorAll("#wrapper ul li")[i];
+						}
+						loadDatas = '';
+					}, 1000);
+				}
+				
+		</script>
+	</body>
+</html>

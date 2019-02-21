@@ -1,0 +1,25 @@
+@charset "utf-8";
+
+/* 分页器样式表 */
+.pager {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.pager span {
+    letter-spacing: 1px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.pager a {
+    margin: 0px 4px;
+    color:#000;
+}
+
+.pager form {
+    margin-left: 5px;
+    display: inline;
+}
